@@ -91,11 +91,14 @@ jobs:
         AIRFLOW__CORE__LOAD_EXAMPLES: "false"
         AIRFLOW__CORE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
     
-    - name: Upload test results
+    - name: Show test results
       if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: |
-          *.log
-          airflow/logs/ 
+      run: |
+        echo "=== Test Results ==="
+        if [ -f "*.log" ]; then
+          cat *.log
+        fi
+        if [ -d "airflow/logs" ]; then
+          echo "=== Airflow Logs ==="
+          ls -la airflow/logs/
+        fi 
