@@ -6,6 +6,7 @@ Este projeto implementa um pipeline ETL utilizando **Apache Airflow** para extra
 ## 🚀 Tecnologias Utilizadas
 - **Apache Airflow**: Orquestração do pipeline ETL
 - **PostgreSQL**: Armazenamento dos dados
+- **Docker**: Contêiner para PostgreSQL
 - **Pandas**: Manipulação e transformação dos dados
 - **Requests**: Coleta de dados de API pública
 - **Streamlit**: Dashboard interativo para visualização dos dados
@@ -17,16 +18,42 @@ airflow-etl-dashboard/
 │   ├── etl_pipeline.py  # DAG do Airflow
 │── app/
 │   ├── dashboard.py  # Dashboard Streamlit
+│── docker/
+│   ├── docker-compose.yml  # Configuração do Docker para PostgreSQL
 │── requirements.txt  # Dependências
 │── README.md  # Documentação do projeto
 ```
 
 ## ⚙️ Configuração e Execução
 
-### 1️⃣ Configurar o Ambiente
-Antes de iniciar, instale as dependências:
+### 1️⃣ Configurar o Banco de Dados com Docker
+Para rodar um contêiner PostgreSQL, crie um arquivo `docker-compose.yml` na pasta `docker/` e adicione:
+
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: meu_user
+      POSTGRES_PASSWORD: minha_senha
+      POSTGRES_DB: meu_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+```
+
+Agora, inicie o contêiner com:
 ```sh
-pip install -r requirements.txt
+cd docker/
+docker-compose up -d
 ```
 
 ### 2️⃣ Configurar o Airflow
