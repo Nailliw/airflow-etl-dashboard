@@ -101,8 +101,8 @@ def load(**context):
 # Definição da DAG
 dag = DAG(
     dag_id="covid_etl",
-    start_date=datetime(2024, 3, 18),
-    schedule_interval="@daily",
+    start_date=datetime(2020, 3, 18),
+    schedule_interval="*/30 * * * *",
     catchup=False,
     tags=['covid', 'etl']
 )
