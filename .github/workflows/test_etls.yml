@@ -1,0 +1,101 @@
+name: Test ETLs
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-etls:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: airflow
+          POSTGRES_USER: airflow
+          POSTGRES_PASSWORD: airflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test Crypto ETL
+      run: |
+        python -c "
+        from test_etl import test_crypto_etl
+        test_crypto_etl()
+        "
+      env:
+        POSTGRES_DB: airflow
+        POSTGRES_USER: airflow
+        POSTGRES_PASSWORD: airflow
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+    
+    - name: Test COVID ETL
+      run: |
+        python -c "
+        from test_etl import test_covid_etl
+        test_covid_etl()
+        "
+      env:
+        POSTGRES_DB: airflow
+        POSTGRES_USER: airflow
+        POSTGRES_PASSWORD: airflow
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+    
+    - name: Test Latin America Deaths ETL
+      run: |
+        python -c "
+        from test_etl import test_latin_america_deaths_etl
+        test_latin_america_deaths_etl()
+        "
+      env:
+        POSTGRES_DB: airflow
+        POSTGRES_USER: airflow
+        POSTGRES_PASSWORD: airflow
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+    
+    - name: Test Airflow DAGs
+      run: |
+        pip install apache-airflow
+        export AIRFLOW_HOME=$(pwd)
+        airflow db init
+        airflow dags list
+        airflow dags test crypto_etl $(date +%Y-%m-%d)
+        airflow dags test etl_covid $(date +%Y-%m-%d)
+        airflow dags test latin_america_deaths_etl $(date +%Y-%m-%d)
+      env:
+        AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+        AIRFLOW__CORE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:airflow@localhost:5432/airflow"
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          *.log
+          airflow/logs/ 
