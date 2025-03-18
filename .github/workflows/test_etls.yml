@@ -78,6 +78,12 @@ jobs:
         POSTGRES_HOST: localhost
         POSTGRES_PORT: 5432
     
+    - name: Setup Airflow DAGs
+      run: |
+        export AIRFLOW_HOME=$(pwd)
+        mkdir -p airflow/dags
+        cp airflow/dags/*.py airflow/dags/
+    
     - name: Test Airflow DAGs
       run: |
         pip install apache-airflow
