@@ -129,7 +129,7 @@ def load(**context):
 dag = DAG(
     dag_id="crypto_etl",
     start_date=datetime(2024, 3, 18),
-    schedule_interval="*/1 * * * *",  # Executar a cada 1 minuto
+    schedule_interval="*/30 * * * *",  # Executar a cada 30 minutos
     catchup=False,
     tags=['crypto', 'etl']
 )
