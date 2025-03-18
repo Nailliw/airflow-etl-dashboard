@@ -43,7 +43,36 @@ st.set_page_config(
 )
 
 # Título
-st.title("Dashboard ETL - COVID e Criptomoedas")
+st.title("Dashboard ETL")
+
+# Descrição
+st.write("""
+Este dashboard mostra dados coletados através de processos ETL automatizados usando Apache Airflow.
+
+### Páginas Disponíveis:
+1. **COVID-19**: Dados sobre casos de COVID-19 em diferentes países
+2. **Criptomoedas**: Dados das 5 criptomoedas mais caras do mercado
+
+### Informações:
+- Os dados são atualizados automaticamente
+- COVID-19: Atualização diária
+- Criptomoedas: Atualização a cada 30 minutos
+""")
+
+# Adicionar informações sobre atualização
+st.sidebar.title("Informações")
+st.sidebar.write("""
+### Atualização dos Dados
+- **COVID-19**: Atualizado diariamente
+- **Criptomoedas**: Atualizado a cada 30 minutos
+""")
+
+# Adicionar filtros
+st.sidebar.header("Filtros")
+time_range = st.sidebar.selectbox(
+    "Período dos Dados",
+    ["Últimas 24 horas", "Última semana", "Último mês"]
+)
 
 # Criar duas colunas
 col1, col2 = st.columns(2)
@@ -86,18 +115,3 @@ with col2:
     # Tabela de dados
     st.subheader("Últimos Dados")
     st.dataframe(crypto_df)
-
-# Adicionar informações sobre atualização
-st.sidebar.title("Informações")
-st.sidebar.write("""
-### Atualização dos Dados
-- **COVID-19**: Atualizado diariamente
-- **Criptomoedas**: Atualizado a cada 30 minutos
-""")
-
-# Adicionar filtros
-st.sidebar.header("Filtros")
-time_range = st.sidebar.selectbox(
-    "Período dos Dados",
-    ["Últimas 24 horas", "Última semana", "Último mês"]
-)
